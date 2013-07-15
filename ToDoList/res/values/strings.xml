@@ -2,10 +2,13 @@
 <resources>
 
     <string name="app_name">ToDoList</string>
-    <string name="action_settings">Settings</string>
+    <string name="app_name_reference">Reference</string>
+    <string name="manu_reference">Reference</string>
     <string name="hello_world">Hello world!</string>
     
     <string name="addItemContentDescription">New To Do Item</string>
     <string name="addItemHint">New To Do Item</string>
-
+    <string name="saveLocalText">是否本地保存？</string>
+    <string name="savePreferences">保存</string>
+	<string name="cancelPreferences">返回</string>
 </resources>

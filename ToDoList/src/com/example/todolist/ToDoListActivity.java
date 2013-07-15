@@ -4,8 +4,10 @@ import java.util.ArrayList;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.Intent;
 import android.view.KeyEvent;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -55,4 +57,13 @@ public class ToDoListActivity extends Activity {
         return true;
     }
     
+    public boolean onOptionsItemSelected(MenuItem item) {
+    	switch (item.getItemId()) {
+    	case R.id.manu_reference:
+    		Intent intent = new Intent();
+    		intent.setClass(this, Reference.class);
+    		startActivity(intent);
+    	}
+    	return true;
+    }
 }
