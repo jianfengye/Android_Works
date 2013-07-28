@@ -61,7 +61,7 @@ public class ToDoListActivity extends Activity {
     	switch (item.getItemId()) {
     	case R.id.manu_reference:
     		Intent intent = new Intent();
-    		intent.setClass(this, Reference.class);
+    		intent.setClass(this, ReferenceActivity.class);
     		startActivity(intent);
     	}
     	return true;

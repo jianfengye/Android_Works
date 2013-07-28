@@ -23,9 +23,12 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.example.todolist.Reference"
+            android:name="com.example.todolist.ReferenceActivity"
             android:label="@string/app_name_reference" >
         </activity>
+        <provider android:name="com.example.todolist.ToDoContentProvider"
+            android:authorities="com.example.todolist.todocontentprovider">
+        </provider>
     </application>
 
 </manifest>

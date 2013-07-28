@@ -12,13 +12,13 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 
-public class Reference extends Activity {
+public class ReferenceActivity extends Activity {
 	
 	public static final String IS_SAVE_LOCAL = "IS_SAVE_LOCAL";
 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.preferences);
+		setContentView(R.layout.preference);
 		
 		final CheckBox checkbox_saveLocal = (CheckBox) findViewById(R.id.saveLocal);
 		
@@ -37,7 +37,7 @@ public class Reference extends Activity {
 				Editor editor = prefs.edit();
 				editor.putBoolean(IS_SAVE_LOCAL, isChecked);
 				editor.commit();	
-				Reference.this.setResult(RESULT_OK);
+				ReferenceActivity.this.setResult(RESULT_OK);
 			}
 		});
 		
@@ -47,7 +47,7 @@ public class Reference extends Activity {
 			@Override
 			public void onClick(View v) {
 				Intent intent = new Intent();
-	    		intent.setClass(Reference.this, ToDoListActivity.class);
+	    		intent.setClass(ReferenceActivity.this, ToDoListActivity.class);
 	    		startActivity(intent);
 			}
 		});
