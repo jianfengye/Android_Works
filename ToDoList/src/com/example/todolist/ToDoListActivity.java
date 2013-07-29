@@ -3,8 +3,8 @@ package com.example.todolist;
 import java.util.ArrayList;
 
 import android.os.Bundle;
-import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
@@ -17,46 +17,48 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.database.Cursor;
 import android.app.LoaderManager;
+import com.example.todolist.ToDoItem;
+import android.content.ContentResolver;
 
-@SuppressLint("NewApi")
 public class ToDoListActivity extends Activity
-	implements  LoaderManager.LoaderCallbacks<Cursor>{
+	implements NewItemFragment.OnNewItemAddedListener, 
+	LoaderManager.LoaderCallbacks<Cursor>{
 	
 	//获得对UI小组件的引用
-    private ArrayList<String> todoItems;
-    private ArrayAdapter<ToDoItem> aa;
+    private ArrayList<ToDoItem> todoItems;
+    private ToDoItemAdapter aa;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
-        ListView myListView = (ListView)findViewById(R.id.myListView);
-        final EditText myEditText = (EditText)findViewById(R.id.myEditText);
+        // 获取该Fragment的引用
+        FragmentManager fm = getFragmentManager();
+        ToDoListFragment todoListFragment = (ToDoListFragment)fm.findFragmentById(R.id.TodoListFragment);
         
-        todoItems = new ArrayList<String>();
+        todoItems = new ArrayList<ToDoItem>();
+        int resID = R.layout.todolist_item;
         
-        aa = new ArrayAdapter<ToDoItem>(this, resID, todoItems);
+        aa = new ToDoItemAdapter(this, resID, todoItems);
         
-        myListView.setAdapter(aa);
-        
-        myEditText.setOnKeyListener(new View.OnKeyListener() {
-		
-			@Override
-			public boolean onKey(View v, int keyCode, KeyEvent event) {
-				if(event.getAction() == KeyEvent.ACTION_DOWN)
-					if((keyCode == KeyEvent.KEYCODE_DPAD_CENTER) ||
-							(keyCode == KeyEvent.KEYCODE_ENTER)) {
-						todoItems.add(0, myEditText.getText().toString());
-						aa.notifyDataSetChanged();
-						myEditText.setText("");
-						return true;
-					}
-				return false;
-			}
-		});
+        todoListFragment.setListAdapter(aa);
+        getLoaderManager().initLoader(0, null, this);
     }
 
+    @Override
+    protected void onResume() {
+      super.onResume();
+      getLoaderManager().restartLoader(0, null, this);
+    }
+    
+    @Override
+	public void onNewItemAdded(String newItem) {
+		ToDoItem newTodoItem = new ToDoItem(newItem);
+		todoItems.add(0, newTodoItem);
+		aa.notifyDataSetChanged();
+	}
+    
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -84,14 +86,14 @@ public class ToDoListActivity extends Activity
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
 		// 当loader查询完成的时候，Cursor会返回到onLoadFinished处理程序。
-		int keyTaskIndex = cursor.getColumnIndexOrThrow(MySQLiteOpenHelper.KEY_TASK);
+		int keyTaskIndex = cursor.getColumnIndexOrThrow(ToDoContentProvider.KEY_TASK);
 		
 		todoItems.clear();
 		while (cursor.moveToNext()) {
 			ToDoItem newItem = new ToDoItem(cursor.getString(keyTaskIndex));
-			//TODO
-			//todoItems.add(newItem);
+			todoItems.add(newItem);
 		}
+		aa.notifyDataSetChanged();
 	}
 
 	@Override
@@ -99,4 +101,6 @@ public class ToDoListActivity extends Activity
 		// TODO Auto-generated method stub
 		
 	}
+
+	
 }

@@ -24,6 +24,7 @@ public class ToDoItem {
 		created = _created;
 	}
 	
+	@Override
 	public String toString() {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy");
 		String dateString = sdf.format(created);
