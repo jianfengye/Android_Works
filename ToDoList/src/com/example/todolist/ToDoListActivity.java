@@ -3,8 +3,11 @@ package com.example.todolist;
 import java.util.ArrayList;
 
 import android.os.Bundle;
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -12,9 +15,17 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.database.Cursor;
+import android.app.LoaderManager;
 
-public class ToDoListActivity extends Activity {
-
+@SuppressLint("NewApi")
+public class ToDoListActivity extends Activity
+	implements  LoaderManager.LoaderCallbacks<Cursor>{
+	
+	//获得对UI小组件的引用
+    private ArrayList<String> todoItems;
+    private ArrayAdapter<ToDoItem> aa;
+	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,12 +34,9 @@ public class ToDoListActivity extends Activity {
         ListView myListView = (ListView)findViewById(R.id.myListView);
         final EditText myEditText = (EditText)findViewById(R.id.myEditText);
         
-        //获得对UI小组件的引用
-        final ArrayList<String> todoItems = new ArrayList<String>();
+        todoItems = new ArrayList<String>();
         
-        final ArrayAdapter<String> aa;
-        
-        aa = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, todoItems);
+        aa = new ArrayAdapter<ToDoItem>(this, resID, todoItems);
         
         myListView.setAdapter(aa);
         
@@ -49,7 +57,6 @@ public class ToDoListActivity extends Activity {
 		});
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -66,4 +73,30 @@ public class ToDoListActivity extends Activity {
     	}
     	return true;
     }
+
+	@Override
+	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+		CursorLoader loader = new CursorLoader(this, ToDoContentProvider.CONTENT_URI,
+				null, null, null, null);
+		return loader;
+	}
+
+	@Override
+	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+		// 当loader查询完成的时候，Cursor会返回到onLoadFinished处理程序。
+		int keyTaskIndex = cursor.getColumnIndexOrThrow(MySQLiteOpenHelper.KEY_TASK);
+		
+		todoItems.clear();
+		while (cursor.moveToNext()) {
+			ToDoItem newItem = new ToDoItem(cursor.getString(keyTaskIndex));
+			//TODO
+			//todoItems.add(newItem);
+		}
+	}
+
+	@Override
+	public void onLoaderReset(Loader<Cursor> arg0) {
+		// TODO Auto-generated method stub
+		
+	}
 }
