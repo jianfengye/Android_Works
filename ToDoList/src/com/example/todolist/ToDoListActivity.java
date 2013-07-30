@@ -8,17 +8,11 @@ import android.app.FragmentManager;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.ListView;
 import android.database.Cursor;
 import android.app.LoaderManager;
 import com.example.todolist.ToDoItem;
-import android.content.ContentResolver;
 
 public class ToDoListActivity extends Activity
 	implements NewItemFragment.OnNewItemAddedListener, 
@@ -29,6 +23,7 @@ public class ToDoListActivity extends Activity
     private ToDoItemAdapter aa;
 	
     @Override
+    // onCreate是创建这个activity的时候会调用的
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
@@ -47,6 +42,7 @@ public class ToDoListActivity extends Activity
     }
 
     @Override
+    // onResume是暂停以后重新启动这个Activity时候调用
     protected void onResume() {
       super.onResume();
       getLoaderManager().restartLoader(0, null, this);

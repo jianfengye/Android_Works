@@ -14,7 +14,7 @@
         android:textColor="#F000"
         android:layout_alignParentRight="true"
         />
- 	<com.paad.todolist.ToDoListItemView
+ 	<com.example.todolist.ToDoListItemView
 	  xmlns:android="http://schemas.android.com/apk/res/android"
 	  android:id="@+id/row"
 	  android:layout_width="match_parent"

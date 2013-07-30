@@ -6,4 +6,4 @@
 		android:layout_height="wrap_content"
 		android:hint="@string/addItemHint"
 		android:contentDescription="@string/addItemContentDescription"
-	/>
+	></EditText>

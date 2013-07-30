@@ -7,10 +7,10 @@
     android:id="@+id/NewItemFragment"
     android:layout_width="match_parent" 
     android:layout_height="wrap_content" 
-  />
+  ></fragment>
   <fragment android:name="com.example.todolist.ToDoListFragment"
     android:id="@+id/TodoListFragment"
     android:layout_width="match_parent" 
     android:layout_height="wrap_content" 
-  />
+  ></fragment>
 </LinearLayout>

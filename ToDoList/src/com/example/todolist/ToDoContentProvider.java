@@ -17,7 +17,7 @@ import android.util.Log;
 public class ToDoContentProvider extends ContentProvider {
   
   public static final Uri CONTENT_URI = 
-      Uri.parse("content://com.paad.todoprovider/todoitems");
+      Uri.parse("content://com.example.todoprovider/todoitems");
   
   public static final String KEY_ID = "_id";
   public static final String KEY_TASK = "task";
@@ -47,8 +47,8 @@ public class ToDoContentProvider extends ContentProvider {
   //represents a single row.
   static {
    uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-   uriMatcher.addURI("com.paad.todoprovider", "todoitems", ALLROWS);
-   uriMatcher.addURI("com.paad.todoprovider", "todoitems/#", SINGLE_ROW);
+   uriMatcher.addURI("com.example.todoprovider", "todoitems", ALLROWS);
+   uriMatcher.addURI("com.example.todoprovider", "todoitems/#", SINGLE_ROW);
   }
 
   @Override
@@ -56,8 +56,8 @@ public class ToDoContentProvider extends ContentProvider {
     // Return a string that identifies the MIME type
     // for a Content Provider URI
     switch (uriMatcher.match(uri)) {
-      case ALLROWS: return "vnd.android.cursor.dir/vnd.paad.todos";
-      case SINGLE_ROW: return "vnd.android.cursor.item/vnd.paad.todos";
+      case ALLROWS: return "vnd.android.cursor.dir/vnd.example.todos";
+      case SINGLE_ROW: return "vnd.android.cursor.item/vnd.example.todos";
       default: throw new IllegalArgumentException("Unsupported URI: " + uri);
     }
   }
