@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.FragmentManager;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
@@ -33,12 +35,15 @@ public class ToDoListActivity extends Activity
         ToDoListFragment todoListFragment = (ToDoListFragment)fm.findFragmentById(R.id.TodoListFragment);
         
         todoItems = new ArrayList<ToDoItem>();
+        
+        // TODO: 这里需要将数据库中存储的东西都读取出来
         int resID = R.layout.todolist_item;
         
         aa = new ToDoItemAdapter(this, resID, todoItems);
         
         todoListFragment.setListAdapter(aa);
         getLoaderManager().initLoader(0, null, this);
+        getLoaderManager().enableDebugLogging(true);
     }
 
     @Override
@@ -50,9 +55,13 @@ public class ToDoListActivity extends Activity
     
     @Override
 	public void onNewItemAdded(String newItem) {
-		ToDoItem newTodoItem = new ToDoItem(newItem);
-		todoItems.add(0, newTodoItem);
-		aa.notifyDataSetChanged();
+    	ContentResolver cr = getContentResolver();
+    
+    	ContentValues values = new ContentValues();
+    	values.put(ToDoContentProvider.KEY_TASK, newItem);
+    	
+    	cr.insert(ToDoContentProvider.CONTENT_URI, values);
+    	getLoaderManager().restartLoader(0, null, this);
 	}
     
     @Override

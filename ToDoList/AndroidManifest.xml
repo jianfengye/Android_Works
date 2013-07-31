@@ -27,7 +27,7 @@
             android:label="@string/app_name_reference" >
         </activity>
         <provider android:name="com.example.todolist.ToDoContentProvider"
-            android:authorities="com.example.todolist.todocontentprovider">
+            android:authorities="com.example.todoprovider">
         </provider>
     </application>
 
