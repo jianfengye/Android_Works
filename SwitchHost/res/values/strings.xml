@@ -3,5 +3,19 @@
 
     <string name="app_name">SwitchHost</string>
     <string name="action_settings">Settings</string>
-
+    
+    <!-- host_menu -->
+	<string name="set">设为当前方案</string>
+	<string name="detail">查看</string>
+	<string name="delete">删除</string>
+	
+	<!-- main_preference -->
+	<string name="add">增加</string>
+	<string name="preference">设置项</string>
+	<string name="quit">退出</string>
+	
+	<!-- addhost -->
+	<string name="addhost">增加方案</string>
+	<string name="addsave">保存方案</string>
+	<string name="hostname">方案名</string>
 </resources>
