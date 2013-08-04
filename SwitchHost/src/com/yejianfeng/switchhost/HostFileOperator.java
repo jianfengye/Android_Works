@@ -1,6 +1,12 @@
 package com.yejianfeng.switchhost;
 
+import java.io.DataOutputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+
+import org.apache.http.util.EncodingUtils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -40,7 +46,7 @@ public class HostFileOperator {
 	{
 		String[] hosts = this.GetHostsName();
 		for	(int i=0; i<hosts.length; i++) {
-			if (hosts[i] == hostName) {
+			if (hosts[i].equals(hostName)) {
 				return true;
 			}
 		}
@@ -60,15 +66,88 @@ public class HostFileOperator {
 		return this.AddHost(hostName, hostContent);
 	}
 	
-	// TODO: 设置hostName为当前的Host
-	public boolean setActivityHost(String hostName)
+	public String getHostContent(String hostName)
 	{
-		return true;
+		// 读取当前文件
+		if (this.isExistHost(hostName) == false) {
+			return null;
+		}
+		String hostPath = context.getFilesDir() + "/" + hostName;
+		String hostContent = this.getFileContent(hostPath);
+		
+		return hostContent;
 	}
 	
-	// TODO: 获取当前Host的内容
+	// 获取当前Host的内容
 	public String getActivityHost()
 	{
+		return this.getFileContent("/etc/hosts");
+	}
+	
+	public boolean setActivityHost(String hostName)
+	{
+		if (this.isExistHost(hostName) == false) {
+			return false;
+		}
+				
+		Process process = null;
+	    DataOutputStream os = null;
+	    try {
+	    	String hostPath = context.getFilesDir() + "/" + hostName;
+	        String cmd="/system/xbin/cp -f " + hostPath + " " + "/etc/hosts";
+	        process = Runtime.getRuntime().exec("su"); //切换到root帐号
+	        os = new DataOutputStream(process.getOutputStream());
+	        os.writeBytes(cmd + "\n");
+	        os.writeBytes("exit\n");
+	        os.flush();
+	        process.waitFor();
+	    } catch (Exception e) {
+	        return false;
+	    } finally {
+	        try {
+	            if (os != null) {
+	                os.close();
+	            }
+	            process.destroy();
+	        } catch (Exception e) {
+	        }
+	    }
+	    return true;
+	}
+	
+	public String getFileContent(String hostFile)
+	{
+		try {
+			FileInputStream fin = new FileInputStream(hostFile);
+			int length = fin.available();
+			
+			byte [] buffer = new byte[length];   
+	        fin.read(buffer);
+			
+	        String res = EncodingUtils.getString(buffer, "UTF-8");   
+	        fin.close();
+	        return res;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return null;
+	}
+	
+	public void setFileContent(String file, String content)
+	{
+		try {
+			Runtime.getRuntime().exec("su");
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		try {
+			FileOutputStream fout = new FileOutputStream(file);
+			byte[] bytes = content.getBytes();
+			
+			fout.write(bytes);
+			fout.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

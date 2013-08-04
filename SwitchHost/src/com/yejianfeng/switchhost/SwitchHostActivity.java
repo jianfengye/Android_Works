@@ -1,13 +1,16 @@
 package com.yejianfeng.switchhost;
 
+import java.io.IOException;
 import java.util.ArrayList;
-
 
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.app.Activity;
+import android.app.AlertDialog.Builder;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,16 +19,19 @@ import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 public class SwitchHostActivity extends Activity {
 
 	// 储存所有host
-	private ArrayList<String> hosts;
-	private ArrayAdapter<String> arrayAdapter;
+	private ArrayList<HostItem> hosts;
+	private HostItemAdapter arrayAdapter;
 	private HostFileOperator operator;
 	
 	public static final String CUR_HOSTNAME = "CUR_HOSTNAME";
-	public static final String DEFAULT_HOSTNAME = "Default";
+	public static final String DEFAULT_HOSTNAME = "default";
+	public static final String CUR_SHARE_PREFERENCE = "cur_share_preference";
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
@@ -35,24 +41,32 @@ public class SwitchHostActivity extends Activity {
 		
 		// 各种初始化操作
 		this.operator = new HostFileOperator(this.getApplicationContext());
-		ListView hostListView = (ListView) findViewById(R.id.HostListView);
-		String[] hostNames = this.operator.GetHostsName();
-		
-		this.hosts = new ArrayList<String>();
-		for (int i=0; i<hostNames.length; i++) {
-			this.hosts.add(hostNames[i]);
-		}
-		
-		// 将hosts绑定到listView
-		this.arrayAdapter = new ArrayAdapter<String>(this, R.layout.hostitem, R.id.hostName, hosts);
-		hostListView.setAdapter(this.arrayAdapter);
-		
-		registerForContextMenu(hostListView); 
 		
 		// 如果没有default文件，则将当前host设置为host
 		if (false == this.operator.isExistHost(this.DEFAULT_HOSTNAME)) {
 			String curHostContent = this.operator.getActivityHost();
 			this.operator.AddHost(this.DEFAULT_HOSTNAME, curHostContent);
+		}
+		
+		ListView hostListView = (ListView) findViewById(R.id.HostListView);
+		String[] hostNames = this.operator.GetHostsName();
+		
+		SharedPreferences prefs = this.getSharedPreferences(SwitchHostActivity.CUR_SHARE_PREFERENCE, Context.MODE_PRIVATE);
+		String curHostName = prefs.getString(SwitchHostActivity.CUR_HOSTNAME,SwitchHostActivity.DEFAULT_HOSTNAME);
+		
+		this.hosts = new ArrayList<HostItem>();
+		
+		// 将hosts绑定到listView
+		this.arrayAdapter = new HostItemAdapter(this, R.layout.hostitem, R.id.hostName, hosts);
+		hostListView.setAdapter(this.arrayAdapter);
+		
+		registerForContextMenu(hostListView); 
+		
+		// 需要root权限
+		try {
+			Process process = Runtime.getRuntime().exec("su");
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -60,11 +74,19 @@ public class SwitchHostActivity extends Activity {
 	// TODO: 这里似乎可以改善
 	protected void onStart()
 	{
+		super.onStart();
 		String[] hostNames = this.operator.GetHostsName();
 		
-		this.hosts = new ArrayList<String>();
+		SharedPreferences prefs = this.getSharedPreferences(SwitchHostActivity.CUR_SHARE_PREFERENCE, Context.MODE_PRIVATE);
+		String curHostName = prefs.getString(SwitchHostActivity.CUR_HOSTNAME,SwitchHostActivity.DEFAULT_HOSTNAME);
+		
+		this.hosts.clear();
 		for (int i=0; i<hostNames.length; i++) {
-			this.hosts.add(hostNames[i]);
+			HostItem tempItem = new HostItem(hostNames[i]);
+			if (hostNames[i].equals(curHostName)) {
+				tempItem.setIsCur(true);
+			}
+			this.hosts.add(tempItem);
 		}
 		this.arrayAdapter.notifyDataSetChanged();
 	}
@@ -80,13 +102,22 @@ public class SwitchHostActivity extends Activity {
 	{
 		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
 		String curHostName;
-		curHostName = item.getActionView().getContext().toString();
+		
+		RelativeLayout hostView;
+		
+		hostView = (RelativeLayout) info.targetView;
+		TextView hostitemName = (TextView)hostView.findViewById(R.id.hostitem_name);
+		
+		curHostName = hostitemName.getText().toString();
 		switch(item.getItemId()) {
 		case R.id.set:
 			this.operator.setActivityHost(curHostName);
-			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
-			prefs.getString(this.CUR_HOSTNAME, this.DEFAULT_HOSTNAME);
-			// TODO: 弹出对话框提示设置成功
+			SharedPreferences prefs = this.getSharedPreferences(SwitchHostActivity.CUR_SHARE_PREFERENCE, Context.MODE_PRIVATE);
+			Editor editor = prefs.edit();
+			editor.putString(this.CUR_HOSTNAME, curHostName);
+			editor.commit();
+			new Builder(this).setTitle("提示").setMessage("设置成功").show();
+			this.onStart();
 			return true;
 		case R.id.detail:
 			Intent intent = new Intent();
@@ -96,8 +127,8 @@ public class SwitchHostActivity extends Activity {
 			return true;
 		case R.id.delete:
 			this.operator.DeleteHost(curHostName);
-			// TODO: 弹出对话框提示删除成功
-			// TODO: 重新刷新当前页面
+			new Builder(this).setTitle("提示").setMessage("删除成功").show();
+			this.onStart();
 			return true;
 		default:
 			return super.onContextItemSelected(item);
@@ -126,11 +157,4 @@ public class SwitchHostActivity extends Activity {
     		return super.onContextItemSelected(item);
     	}
     }
-	
-	private void SetCurHostImageView(String curHostName)
-	{
-		this.arrayAdapter.getViewTypeCount()
-		this.arrayAdapter.getView(position, convertView, parent)
-	}
-
 }

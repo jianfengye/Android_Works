@@ -30,6 +30,10 @@ public class AddHostActivity extends Activity {
 		String hostName = hostNameText.getText().toString();
 		
 		// TODO： 检验名字是否重复
+		if (this.operator.isExistHost(hostName) == true) {
+			new Builder(this).setTitle("提示").setMessage("已经有相同的方案了").show();
+			return;
+		}
 		
 		// 获取host内容
 		EditText hostContentText = (EditText) findViewById(R.id.hostContent);
@@ -40,19 +44,7 @@ public class AddHostActivity extends Activity {
 		Log.v("Add Host Save", hostName);
 		
 		// 提示保存成功
-		AlertDialog.Builder builder = new Builder(this);
-		builder.setMessage("保存成功");
-		builder.setTitle("提示");
-		builder.setPositiveButton("确认", new OnClickListener(){
-			public void onClick(DialogInterface dialog, int which) {
-				dialog.dismiss();
-			}
-		});
-		builder.setNegativeButton("取消", new OnClickListener(){
-			public void onClick(DialogInterface dialog, int which) {
-				dialog.dismiss();
-			}
-		});
+		new Builder(this).setTitle("提示").setMessage("保存成功").show();
 		
 		// 返回到SwithHostActivity
 		Intent intent = new Intent();

@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 
 public class ModifyHostActivity extends Activity {
@@ -26,6 +27,11 @@ public class ModifyHostActivity extends Activity {
 		hostName.setText(this.curHostName);
 		
 		this.operator = new HostFileOperator(this.getApplicationContext());
+		
+		String Content = this.operator.getHostContent(this.curHostName);
+		EditText hostContent = (EditText) findViewById(R.id.modifyHostContent);
+		
+		hostContent.setText(Content);
 	}
 	
 	// 保存按钮触发的操作
@@ -37,18 +43,7 @@ public class ModifyHostActivity extends Activity {
 		
 		// 提示保存成功
 		AlertDialog.Builder builder = new Builder(this);
-		builder.setMessage("保存成功");
-		builder.setTitle("提示");
-		builder.setPositiveButton("确认", new OnClickListener(){
-			public void onClick(DialogInterface dialog, int which) {
-				dialog.dismiss();
-			}
-		});
-		builder.setNegativeButton("取消", new OnClickListener(){
-			public void onClick(DialogInterface dialog, int which) {
-				dialog.dismiss();
-			}
-		});
+		new Builder(this).setTitle("提示").setMessage("保存成功").show();
 				
 		// 返回到SwithHostActivity
 		Intent intent = new Intent();
