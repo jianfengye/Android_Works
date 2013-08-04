@@ -24,7 +24,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_marginRight="18dp"
-            android:text="@string/addsave" />
+            android:text="@string/addsave"
+            android:onClick="addHost" />
     </RelativeLayout>
 
     <RelativeLayout

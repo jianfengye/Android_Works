@@ -15,7 +15,7 @@
             android:layout_alignParentTop="true"
             android:layout_marginLeft="28dp"
             android:layout_marginTop="18dp"
-            android:text="方案一"
+            android:id="@+id/curHostName"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <Button
@@ -24,11 +24,12 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_marginRight="18dp"
-            android:text="@string/addsave" />
+            android:text="@string/addsave"
+            android:onClick="modifyHost" />
     </RelativeLayout>
 
     <EditText
-        android:id="@+id/hostContent"
+        android:id="@+id/modifyHostContent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:ems="10"
