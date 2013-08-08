@@ -33,6 +33,8 @@ public class SwitchHostActivity extends Activity {
 	public static final String DEFAULT_HOSTNAME = "default";
 	public static final String CUR_SHARE_PREFERENCE = "cur_share_preference";
 	
+	private Process process;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
 	{
@@ -64,7 +66,9 @@ public class SwitchHostActivity extends Activity {
 		
 		// 需要root权限
 		try {
-			Process process = Runtime.getRuntime().exec("su");
+			if (this.process == null) {
+				this.process = Runtime.getRuntime().exec("su");
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -111,12 +115,12 @@ public class SwitchHostActivity extends Activity {
 		curHostName = hostitemName.getText().toString();
 		switch(item.getItemId()) {
 		case R.id.set:
-			this.operator.setActivityHost(curHostName);
+			this.operator.setActivityHost(curHostName, this.process);
 			SharedPreferences prefs = this.getSharedPreferences(SwitchHostActivity.CUR_SHARE_PREFERENCE, Context.MODE_PRIVATE);
 			Editor editor = prefs.edit();
 			editor.putString(this.CUR_HOSTNAME, curHostName);
 			editor.commit();
-			new Builder(this).setTitle("提示").setMessage("设置成功").show();
+			//new Builder(this).setTitle("提示").setMessage("设置成功").show();
 			this.onStart();
 			return true;
 		case R.id.detail:
@@ -157,4 +161,9 @@ public class SwitchHostActivity extends Activity {
     		return super.onContextItemSelected(item);
     	}
     }
+	
+	public void onBackPressed()
+	{
+		finish();
+	}
 }

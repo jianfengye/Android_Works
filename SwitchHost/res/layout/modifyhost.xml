@@ -25,15 +25,20 @@
             android:layout_alignParentRight="true"
             android:layout_marginRight="18dp"
             android:text="@string/addsave"
-            android:onClick="modifyHost" />
+            android:onClick="modifyHost"
+            android:background="@drawable/button_green" />
     </RelativeLayout>
 
     <EditText
         android:id="@+id/modifyHostContent"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:ems="10"
-        android:inputType="textMultiLine" >
+        android:layout_height="wrap_content"
+        android:background="#ffffff"
+        android:ems="20"
+        android:gravity="top|left"
+        android:inputType="textMultiLine"
+        android:lines="60"
+        android:maxLines="60">
 
         <requestFocus />
     </EditText>

@@ -16,6 +16,9 @@
 	
 	<!-- addhost -->
 	<string name="addhost">增加方案</string>
-	<string name="addsave">保存方案</string>
+	<string name="addsave">保存</string>
 	<string name="hostname">方案名</string>
+	
+	<!-- modifyhost -->
+	<string name="modifyhost">查看</string>
 </resources>

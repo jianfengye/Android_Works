@@ -45,9 +45,6 @@ public class ModifyHostActivity extends Activity {
 		AlertDialog.Builder builder = new Builder(this);
 		new Builder(this).setTitle("提示").setMessage("保存成功").show();
 				
-		// 返回到SwithHostActivity
-		Intent intent = new Intent();
-		intent.setClass(this, SwitchHostActivity.class);
-		startActivity(intent);
+		finish();
 	}
 }

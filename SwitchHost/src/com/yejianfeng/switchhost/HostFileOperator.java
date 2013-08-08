@@ -84,18 +84,17 @@ public class HostFileOperator {
 		return this.getFileContent("/etc/hosts");
 	}
 	
-	public boolean setActivityHost(String hostName)
+	public boolean setActivityHost(String hostName, Process process)
 	{
 		if (this.isExistHost(hostName) == false) {
 			return false;
 		}
 				
-		Process process = null;
 	    DataOutputStream os = null;
 	    try {
 	    	String hostPath = context.getFilesDir() + "/" + hostName;
 	        String cmd="/system/xbin/cp -f " + hostPath + " " + "/etc/hosts";
-	        process = Runtime.getRuntime().exec("su"); //«–ªªµΩroot’ ∫≈
+	        //process = Runtime.getRuntime().exec("su"); //«–ªªµΩroot’ ∫≈
 	        os = new DataOutputStream(process.getOutputStream());
 	        os.writeBytes(cmd + "\n");
 	        os.writeBytes("exit\n");
@@ -108,7 +107,7 @@ public class HostFileOperator {
 	            if (os != null) {
 	                os.close();
 	            }
-	            process.destroy();
+	            //process.destroy();
 	        } catch (Exception e) {
 	        }
 	    }
@@ -150,4 +149,5 @@ public class HostFileOperator {
 			e.printStackTrace();
 		}
 	}
+	
 }

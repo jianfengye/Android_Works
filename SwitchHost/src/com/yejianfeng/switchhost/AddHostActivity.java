@@ -29,7 +29,7 @@ public class AddHostActivity extends Activity {
 		EditText hostNameText = (EditText) findViewById(R.id.hostName);
 		String hostName = hostNameText.getText().toString();
 		
-		// TODO： 检验名字是否重复
+		// 检验名字是否重复
 		if (this.operator.isExistHost(hostName) == true) {
 			new Builder(this).setTitle("提示").setMessage("已经有相同的方案了").show();
 			return;
@@ -46,9 +46,6 @@ public class AddHostActivity extends Activity {
 		// 提示保存成功
 		new Builder(this).setTitle("提示").setMessage("保存成功").show();
 		
-		// 返回到SwithHostActivity
-		Intent intent = new Intent();
-		intent.setClass(this, SwitchHostActivity.class);
-		startActivity(intent);
+		finish();
 	}
 }
