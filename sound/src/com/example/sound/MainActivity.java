@@ -4,8 +4,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
+import android.media.SoundPool;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlertDialog.Builder;
@@ -64,6 +66,10 @@ public class MainActivity extends Activity {
 	public void onChange(View v) {
 		// TODO:
 		// 执行音频修改
+		SoundPool sp = new SoundPool(4, AudioManager.STREAM_MUSIC, 0);
+		int StreamId = sp.load(this.RAW_RECORD_FILE, 1);
+		sp.play(StreamId, 1, 1, 1, 0, (float) 0.5);
+		
 		// 保存为临时文件2
 	}
 	
