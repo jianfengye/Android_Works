@@ -42,6 +42,9 @@ public class MainActivity extends Activity {
 	private File audioFile;
 	private File audioChangeFile;
 	
+	private Thread recordThread = null;
+	private Thread playThread = null;
+	
 	private LinkedList<byte[]> wavDatas = new LinkedList<byte[]>();
 	
 	@Override
@@ -56,14 +59,24 @@ public class MainActivity extends Activity {
 				audioEncoding, recBufSize);
 		
 		audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, frequency, channelConfiguration,
-				audioEncoding, playBufSize, AudioTrack.MODE_STREAM);
+				audioEncoding, playBufSize + 2048, AudioTrack.MODE_STREAM);
 		
 		File fpath = new File(this.getApplicationContext().getFilesDir() + "/");
 		try {
-			audioFile = File.createTempFile("recording", ".pcm", fpath);
-			audioChangeFile = File.createTempFile("recording2", ".wav", fpath);
+			audioFile = new File(fpath, "recording.pcm");
+			audioChangeFile = new File(fpath, "recording2.wav");
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+	
+	@Override
+	protected void onDestroy() {
+		if (audioFile.exists()) {
+			//audioFile.delete();
+		}
+		if (audioChangeFile.exists()) {
+			audioChangeFile.delete();
 		}
 	}
 
@@ -83,10 +96,11 @@ public class MainActivity extends Activity {
         
 		try{
 			// 启动监听进程
-			Thread thread = new Thread(new Runnable(){
+			recordThread = new Thread(new Runnable(){
 				
 				public void run(){
-					byte[] buffer = new byte[recBufSize];
+					Log.d("MyAndroid", "This is run Android");
+					short[] buffer = new short[recBufSize];
 					try {
 						DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(audioFile)));
 						audioRecord.startRecording();
@@ -98,6 +112,7 @@ public class MainActivity extends Activity {
 		                    }
 						}
 						audioRecord.stop();
+						dos.flush();
 						dos.close();
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -105,6 +120,7 @@ public class MainActivity extends Activity {
 				}
 				
 			});
+			recordThread.start();
 		} catch (Exception e){
 			e.printStackTrace();
 		}
@@ -113,6 +129,7 @@ public class MainActivity extends Activity {
 	
 	public void onStop(View v) {
 		isRecording = false;
+		//recordThread.stop();
 	}
 	
 	public void onChange(View v) {
@@ -173,7 +190,7 @@ public class MainActivity extends Activity {
 		// 使用AudioTrack
 		try{
 			// 启动监听进程
-			Thread thread = new Thread(new Runnable(){
+			playThread = new Thread(new Runnable(){
 						
 				public void run(){
 							
@@ -199,6 +216,7 @@ public class MainActivity extends Activity {
 				}
 						
 			});
+			playThread.start();
 		} catch (Exception e){
 			e.printStackTrace();
 		}
@@ -207,37 +225,21 @@ public class MainActivity extends Activity {
 	public void onPlayRaw(View v) {
 		// 播放原本的音频文件
 		// 使用AudioTrack
-		try{
-			// 启动监听进程
-			Thread thread = new Thread(new Runnable(){
-				
-				public void run(){
-					
-					try {
-						FileInputStream inStream;
-						inStream = new FileInputStream(audioFile);
-						
-						
-						long size = audioFile.length();
-						byte[] data_pack = new byte[(int) size];
-						inStream.read(data_pack);
-						
-						audioTrack.play();
-						
-						int offset = 0;
-						while (offset < size) {
-							audioTrack.write(data_pack, offset, playBufSize);
-							offset += playBufSize;
-						}
-						audioTrack.stop();
-						
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-				
-			});
-		} catch (Exception e){
+		try {
+			FileInputStream inStream;
+			inStream = new FileInputStream(audioFile);
+			
+			int bufferSize = 512;
+			int i = 0;
+			
+			byte[] buffer = new byte[bufferSize];
+			audioTrack.play();
+			while((i = inStream.read(buffer)) != -1) {
+				audioTrack.write(buffer, 0, i);
+			}
+			inStream.close();
+			
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
